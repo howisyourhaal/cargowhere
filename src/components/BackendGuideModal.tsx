@@ -78,34 +78,16 @@ export const BackendGuideModal: React.FC<BackendGuideModalProps> = ({
     }
   };
 
-  const serverSnippet = `// In your server.ts (Express backend):
-import express from 'express';
+  const serverSnippet = `// Live endpoints already created in /api folder:
+// 1. GET /api/health -> Health status and LTA key configuration check
+// 2. GET /api/carparkavailablity -> Pulls live lots from LTA DataMall
 
-const app = express();
-const LTA_API_KEY = process.env.LTA_DATAMALL_KEY || '';
+// When ready, simply add your key to .env:
+LTA_ACCOUNT_KEY="your_lta_account_key"
 
-// Proxy endpoint for Singapore Carpark Availability:
-app.get('/api/carpark-availability', async (req, res) => {
-  try {
-    // 1. Fetch LTA DataMall v2 or data.gov.sg:
-    const ltaResponse = await fetch(
-      'http://datamall2.mytransport.sg/ltaodataservice/CarParkAvailabilityv2',
-      {
-        headers: {
-          AccountKey: LTA_API_KEY,
-          accept: 'application/json',
-        },
-      }
-    );
-    const data = await ltaResponse.json();
-
-    // 2. Return JSON to frontend
-    res.json(data.value || []);
-  } catch (error) {
-    console.error('Error fetching LTA carpark feed:', error);
-    res.status(500).json({ error: 'Failed to fetch carpark availability' });
-  }
-});`;
+// The /api/carparkavailablity endpoint automatically reads LTA_ACCOUNT_KEY:
+// Headers: AccountKey: <LTA_ACCOUNT_KEY>
+// Endpoint: https://datamall2.mytransport.sg/ltaodataservice/CarParkAvailabilityv2`;
 
   const handleCopyCode = () => {
     navigator.clipboard.writeText(serverSnippet);

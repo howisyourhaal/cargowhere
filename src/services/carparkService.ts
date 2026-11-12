@@ -88,25 +88,51 @@ export async function getCarparks(
   filters?: CarparkFilters,
   userLocation?: { lat: number; lng: number }
 ): Promise<Carpark[]> {
-  const backendUrl = getCustomBackendUrl();
+  const customUrl = getCustomBackendUrl();
+  const endpointToFetch = customUrl || '/api/carparkavailablity';
 
   let dataset: Carpark[] = currentCarparksState;
 
-  if (backendUrl) {
-    try {
-      const response = await fetch(backendUrl, {
-        headers: { Accept: 'application/json' },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          dataset = data;
-          currentCarparksState = data;
-        }
+  try {
+    const response = await fetch(endpointToFetch, {
+      headers: { Accept: 'application/json' },
+    });
+    if (response.ok) {
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        dataset = data;
+        currentCarparksState = data;
+      } else if (data && data.status === 'success' && Array.isArray(data.value)) {
+        // Map live LTA DataMall items into existing carpark dataset
+        const ltaMap = new Map<string, number>();
+        data.value.forEach((item: any) => {
+          if (item.CarParkID) {
+            ltaMap.set(String(item.CarParkID).toUpperCase(), Number(item.AvailableLots) || 0);
+          }
+          if (item.Development) {
+            ltaMap.set(String(item.Development).toUpperCase().trim(), Number(item.AvailableLots) || 0);
+          }
+        });
+
+        dataset = currentCarparksState.map((cp) => {
+          const idMatch = cp.carparkNumber ? ltaMap.get(cp.carparkNumber.toUpperCase()) : undefined;
+          const nameMatch = ltaMap.get(cp.name.toUpperCase().trim());
+          const liveLots = idMatch ?? nameMatch;
+
+          if (liveLots !== undefined) {
+            return {
+              ...cp,
+              availableLots: liveLots,
+              lastUpdated: data.timestamp || new Date().toISOString(),
+            };
+          }
+          return cp;
+        });
+        currentCarparksState = dataset;
       }
-    } catch {
-      // Graceful fallback to local mock dataset if backend is not yet running
     }
+  } catch {
+    // Graceful fallback to local mock / simulated state
   }
 
   // Calculate distance from user or reference point
