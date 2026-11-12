@@ -73,16 +73,8 @@ export const CarparkDetailModal: React.FC<CarparkDetailModalProps> = ({
     Math.round(((carpark.totalLots - carpark.availableLots) / carpark.totalLots) * 100)
   );
 
-  const openNavApp = (app: 'google' | 'apple' | 'waze') => {
-    const { lat, lng } = carpark.coordinates;
-    let url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-    if (app === 'apple') {
-      url = `https://maps.apple.com/?daddr=${lat},${lng}`;
-    } else if (app === 'waze') {
-      url = `https://waze.com/ul?ll=${lat},${lng}&navigate=yes`;
-    }
-    window.open(url, '_blank', 'noopener,noreferrer');
-  };
+  const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${carpark.coordinates.lat},${carpark.coordinates.lng}`;
+  const wazeUrl = `https://waze.com/ul?ll=${carpark.coordinates.lat},${carpark.coordinates.lng}&navigate=yes`;
 
   return (
     <div
@@ -412,20 +404,24 @@ export const CarparkDetailModal: React.FC<CarparkDetailModalProps> = ({
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto">
-            <button
-              onClick={() => openNavApp('google')}
+            <a
+              href={googleMapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2.5 text-xs font-medium text-white bg-slate-900 dark:bg-slate-100 dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-white rounded-xl transition-colors shadow-sm"
             >
               <Navigation className="w-3.5 h-3.5" />
               <span>Google Maps</span>
-            </button>
-            <button
-              onClick={() => openNavApp('waze')}
+            </a>
+            <a
+              href={wazeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
             >
               <ExternalLink className="w-3.5 h-3.5" />
               <span>Waze</span>
-            </button>
+            </a>
           </div>
         </div>
       </div>

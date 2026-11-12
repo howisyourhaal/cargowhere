@@ -131,7 +131,7 @@ export default function App() {
   // GPS Locate Me
   const handleLocateMe = () => {
     if (!navigator.geolocation) {
-      alert('Geolocation is not supported by your browser.');
+      setUserLocation(SINGAPORE_DEFAULT_COORDS);
       return;
     }
 

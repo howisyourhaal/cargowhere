@@ -37,11 +37,7 @@ export const CarparkCard: React.FC<CarparkCardProps> = ({
     availabilityLabel = 'Limited Lots';
   }
 
-  const openExternalMaps = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${carpark.coordinates.lat},${carpark.coordinates.lng}`;
-    window.open(url, '_blank', 'noopener,noreferrer');
-  };
+  const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${carpark.coordinates.lat},${carpark.coordinates.lng}`;
 
   return (
     <div
@@ -159,14 +155,17 @@ export const CarparkCard: React.FC<CarparkCardProps> = ({
           <span>Estimate Fee</span>
         </button>
 
-        <button
-          onClick={openExternalMaps}
+        <a
+          href={mapsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
           className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium text-white bg-slate-900 dark:bg-slate-100 dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-white rounded-xl transition-colors whitespace-nowrap"
           title="Open directions in Google Maps"
         >
           <Navigation className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">Navigate</span>
-        </button>
+        </a>
 
         <div className="w-8 h-8 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
           <ChevronRight className="w-4 h-4" />

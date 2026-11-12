@@ -12,6 +12,22 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+      // Ignore harmless WebSocket connection errors (per AI Studio environment instructions)
+      window.addEventListener('unhandledrejection', function (event) {
+        if (
+          event &&
+          event.reason &&
+          (typeof event.reason === 'string'
+            ? event.reason.includes('WebSocket') || event.reason.includes('ws')
+            : event.reason.message?.includes('WebSocket') ||
+              event.reason.message?.includes('ws') ||
+              event.reason.stack?.includes('@vite/client'))
+        ) {
+          event.preventDefault();
+        }
+      });
+    </script>
   </head>
   <body class="bg-slate-50 text-slate-900 antialiased selection:bg-emerald-500 selection:text-white">
     <div id="root"></div>
